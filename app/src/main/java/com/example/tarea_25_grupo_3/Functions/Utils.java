@@ -68,8 +68,6 @@ public class Utils {
 
 
 
-
-
         return lon;
     }
 
