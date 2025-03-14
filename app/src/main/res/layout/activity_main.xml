@@ -5,12 +5,59 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#94890096"
     tools:context=".Activities.MainActivity">
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/mapView"
+    <FrameLayout
+        android:id="@+id/latitud"
+        android:layout_width="381dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="16dp"
+        android:background="#08070C3A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/longitud"
+        android:layout_width="379dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="60dp"
+        app:layout_constraintEnd_toEndOf="@+id/latitud"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/latitud">
+
+    </FrameLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/mapa"
+        android:name="androidx.appcompat.app.AppCompatDialogFragment"
+        android:layout_width="364dp"
+        android:layout_height="376dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.319"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/longitud"
+        app:layout_constraintVertical_bias="0.139" />
+
+    <Button
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:layout_editor_absoluteX="225dp"
-        tools:layout_editor_absoluteY="231dp" />
+        android:text="Button"
+        tools:layout_editor_absoluteX="38dp"
+        tools:layout_editor_absoluteY="604dp" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Button"
+        tools:layout_editor_absoluteX="244dp"
+        tools:layout_editor_absoluteY="604dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>
