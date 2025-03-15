@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
@@ -5,6 +7,7 @@ plugins {
 android {
     namespace = "com.example.tarea_25_grupo_3"
     compileSdk = 35
+
 
     defaultConfig {
         applicationId = "com.example.tarea_25_grupo_3"
@@ -14,6 +17,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+//        val properties = Properties()
+//        properties.load(project.rootProject.file("local.properties").inputStream())
+//        buildConfigField("String", "MAPS_API_KEY", "\"${properties.getProperty("MAPS_API_KEY")}\"")
     }
 
     buildTypes {
@@ -33,6 +40,8 @@ android {
 
 dependencies {
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("com.google.android.gms:play-services-maps:18.2.0")
+    implementation ("com.google.android.material:material:1.8.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
@@ -43,3 +52,4 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
 }
+

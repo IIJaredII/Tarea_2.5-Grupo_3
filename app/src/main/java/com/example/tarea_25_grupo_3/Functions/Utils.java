@@ -92,10 +92,6 @@ public class Utils {
             alt = loc.getAltitude();
         }
 
-
-
-
-
         return alt;
     }
 
