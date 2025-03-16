@@ -21,6 +21,8 @@ import com.example.tarea_25_grupo_3.Data.UbicacionesRepository;
 import com.example.tarea_25_grupo_3.Functions.Utils;
 import com.example.tarea_25_grupo_3.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,13 +33,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-
     private static final int PERMISSION_REQUEST_CODE = 1001;
     private FusedLocationProviderClient fusedLocationClient;
     private GoogleMap mMap;
     private Utils utils;
     private UbicacionesRepository ubicacionesRepository;
-    CardView btnGuardarUbicacion,btnLista;
+    CardView btnGuardarUbicacion, btnLista;
+
+    private LocationRequest locationRequest;
+    private LocationCallback locationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,21 +61,21 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         inicializarVista();
         configurarEventos();
         verificarPermisos();
+        configurarUbicacionActual();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
     }
 
-    private void inicializarVista(){
+    private void inicializarVista() {
         btnGuardarUbicacion = findViewById(R.id.cardGuardarUbicacion);
         btnLista = findViewById(R.id.cardMostrarLista);
     }
 
-    private void configurarEventos(){
+    private void configurarEventos() {
         btnGuardarUbicacion.setOnClickListener(v -> {
             double lat = utils.getLatitud(MainActivity.this, MainActivity.this);
             double lon = utils.getLongitud(MainActivity.this, MainActivity.this);
@@ -90,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
     }
 
-    private void verificarPermisos(){
+    private void verificarPermisos() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_REQUEST_CODE);
         } else {
@@ -109,6 +113,29 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Toast.makeText(this, "Permiso de ubicación denegado.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void configurarUbicacionActual() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(5000); // 5 seconds
+        locationRequest.setFastestInterval(2000); // 2 seconds
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(com.google.android.gms.location.LocationResult locationResult) {
+                if (locationResult != null) {
+                    for (Location location : locationResult.getLocations()) {
+                        if (location != null) {
+                            double lat = location.getLatitude();
+                            double lng = location.getLongitude();
+                            LatLng miUbicacion = new LatLng(lat, lng);
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(miUbicacion, 15));
+                        }
+                    }
+                }
+            }
+        };
     }
 
     private void obtenerUbicacion() {
@@ -132,12 +159,30 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
             obtenerUbicacion();
+            // Start receiving location updates
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Stop receiving location updates when the activity is paused
+        fusedLocationClient.removeLocationUpdates(locationCallback);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Restart receiving location updates when the activity is resumed
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
         }
     }
 }
